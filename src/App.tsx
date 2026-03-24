@@ -47,7 +47,9 @@ export default function App() {
   const animKey = `${selectedKey}-${row?.time ?? ''}`;
 
   return (
-    <div className={`app-root ${memory ? 'app-root--memory' : ''}`}>
+    <div
+      className={`app-root ${memory ? 'app-root--memory' : ''} ${brightSky ? 'app-root--bright-sky' : ''}`}
+    >
       <div className="sky-background" style={{ background: gradient }} />
       <SkyCanvas row={row} phase={phase} />
       <HUD
@@ -55,6 +57,7 @@ export default function App() {
         selectedDateKey={selectedKey}
         todayKey={todayKey}
         sunset={sunset}
+        brightSky={brightSky}
       />
       <ScoreDisplay
         score={scored.score}
@@ -64,11 +67,8 @@ export default function App() {
         animKey={animKey}
       />
       <p className="footnote">
-        We aim to predict sunset potential based on certain weather conditions.
-        <br />
-        The actual sunset is entirely up the sky.
-        <br />
-        60% science, 40% chance. Good luck.
+        Trying to predict the sunset based on some conditions, <br />
+        but it's up to the sky at the end of the day :)
       </p>
       <DateNav
         todayKey={todayKey}

@@ -5,6 +5,8 @@ type Props = {
   selectedDateKey: string;
   todayKey: string;
   sunset: Date | null;
+  /** True when sky gradient is bright — use dark text for contrast */
+  brightSky: boolean;
 };
 
 function formatDelta(ms: number): string {
@@ -17,19 +19,26 @@ function formatDelta(ms: number): string {
   return `${sign}${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
 }
 
-export function HUD({ now, selectedDateKey, todayKey, sunset }: Props) {
+export function HUD({
+  now,
+  selectedDateKey,
+  todayKey,
+  sunset,
+  brightSky,
+}: Props) {
   const deltaMs = sunset ? sunset.getTime() - now.getTime() : 0;
   const countdown = sunset ? formatDelta(deltaMs) : '—:—:—';
+  const ink = brightSky ? 'hud--ink-dark' : 'hud--ink-light';
 
   return (
     <>
-      <div className="hud hud--left">Boston</div>
-      <div className="hud hud--center">
+      <div className={`hud hud--left ${ink}`}>Boston</div>
+      <div className={`hud hud--center ${ink}`}>
         <span>{formatHudTime(now)}</span>
         <span className="hud__countdown"> {countdown}</span>
       </div>
       <div
-        className={`hud hud--right ${selectedDateKey !== todayKey ? 'hud--alt' : ''}`}
+        className={`hud hud--right ${ink} ${selectedDateKey !== todayKey ? 'hud--alt' : ''}`}
       >
         {formatDateKeyLabel(selectedDateKey)}
       </div>
