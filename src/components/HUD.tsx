@@ -4,8 +4,8 @@ type Props = {
   now: Date;
   selectedDateKey: string;
   todayKey: string;
-  sunset: Date | null;
-  /** True when sky gradient is bright — use dark text for contrast */
+  /** Evening golden hour begins (sun ~6°; SunCalc). Shown as main clock. */
+  goldenHourStart: Date;
   brightSky: boolean;
 };
 
@@ -23,18 +23,18 @@ export function HUD({
   now,
   selectedDateKey,
   todayKey,
-  sunset,
+  goldenHourStart,
   brightSky,
 }: Props) {
-  const deltaMs = sunset ? sunset.getTime() - now.getTime() : 0;
-  const countdown = sunset ? formatDelta(deltaMs) : '—:—:—';
+  const deltaMs = goldenHourStart.getTime() - now.getTime();
+  const countdown = formatDelta(deltaMs);
   const ink = brightSky ? 'hud--ink-dark' : 'hud--ink-light';
 
   return (
     <>
       <div className={`hud hud--left ${ink}`}>Boston</div>
       <div className={`hud hud--center ${ink}`}>
-        <span>{formatHudTime(now)}</span>
+        <span>{formatHudTime(goldenHourStart)}</span>
         <span className="hud__countdown"> {countdown}</span>
       </div>
       <div

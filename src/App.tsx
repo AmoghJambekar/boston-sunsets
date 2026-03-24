@@ -5,24 +5,35 @@ import { HUD } from './components/HUD';
 import { ScoreDisplay } from './components/ScoreDisplay';
 import { SkyCanvas } from './components/SkyCanvas';
 import { useSkyState } from './hooks/useSkyState';
-import { useSunsetTime } from './hooks/useSunsetTime';
 import { useWeatherData } from './hooks/useWeatherData';
 import { dateKeyET } from './lib/dates';
+import { getBostonSunPack } from './lib/bostonSolar';
 import { gradientFromState, isBrightPhase } from './lib/gradientMapper';
 import { scoreWeatherRow } from './lib/scoreEngine';
-import { urgencyFromMinutes } from './lib/urgency';
+import { urgencyFromGoldenWindow } from './lib/urgency';
 
 export default function App() {
   const [selectedKey, setSelectedKey] = useState(() => dateKeyET(new Date()));
   const [conditionsOpen, setConditionsOpen] = useState(false);
 
-  const { sunrise, sunset } = useSunsetTime(selectedKey);
-  const { data: weather } = useWeatherData(selectedKey, sunset);
-  const { now, phase, minutesToSunset } = useSkyState(selectedKey, sunrise, sunset);
+  const sun = useMemo(() => getBostonSunPack(selectedKey), [selectedKey]);
+  const { sunrise, sunset, goldenHourEveningStart, viewAnchor } = sun;
+
+  const { data: weather } = useWeatherData(selectedKey, viewAnchor);
+  const { now, phase } = useSkyState(
+    selectedKey,
+    sunrise,
+    sunset,
+    viewAnchor
+  );
 
   const todayKey = useMemo(() => dateKeyET(now), [now]);
 
-  const urgency = urgencyFromMinutes(minutesToSunset);
+  const urgency = urgencyFromGoldenWindow(
+    now,
+    goldenHourEveningStart,
+    sunset
+  );
   const row = weather?.row ?? null;
 
   const scored = useMemo(() => {
@@ -56,7 +67,7 @@ export default function App() {
         now={now}
         selectedDateKey={selectedKey}
         todayKey={todayKey}
-        sunset={sunset}
+        goldenHourStart={goldenHourEveningStart}
         brightSky={brightSky}
       />
       <ScoreDisplay

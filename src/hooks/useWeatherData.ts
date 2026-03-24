@@ -10,13 +10,13 @@ import {
 const weatherCache = new Map<string, WeatherData>();
 let forecastHourly: Awaited<ReturnType<typeof fetchForecastBlock>> | null = null;
 
-export function useWeatherData(dateKey: string, sunset: Date | null) {
+export function useWeatherData(dateKey: string, anchorInstant: Date | null) {
   const [data, setData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (!sunset) {
+    if (!anchorInstant) {
       setData(null);
       setLoading(true);
       return;
@@ -35,14 +35,14 @@ export function useWeatherData(dateKey: string, sunset: Date | null) {
       try {
         if (isPastDayET(dateKey)) {
           const h = await fetchArchiveDay(dateKey);
-          const wd = buildWeatherData(h, dateKey, sunset);
+          const wd = buildWeatherData(h, dateKey, anchorInstant);
           weatherCache.set(dateKey, wd);
           if (!cancelled) setData(wd);
         } else {
           if (!forecastHourly) {
             forecastHourly = await fetchForecastBlock();
           }
-          const wd = buildWeatherData(forecastHourly, dateKey, sunset);
+          const wd = buildWeatherData(forecastHourly, dateKey, anchorInstant);
           weatherCache.set(dateKey, wd);
           if (!cancelled) setData(wd);
         }
@@ -55,7 +55,7 @@ export function useWeatherData(dateKey: string, sunset: Date | null) {
     return () => {
       cancelled = true;
     };
-  }, [dateKey, sunset]);
+  }, [dateKey, anchorInstant]);
 
   return { data, loading, error };
 }
@@ -63,20 +63,20 @@ export function useWeatherData(dateKey: string, sunset: Date | null) {
 /** For DateNav parallel score preload — respects cache */
 export async function ensureWeatherForDate(
   dateKey: string,
-  sunset: Date
+  anchorInstant: Date
 ): Promise<WeatherData> {
   const cached = weatherCache.get(dateKey);
   if (cached) return cached;
   if (isPastDayET(dateKey)) {
     const h = await fetchArchiveDay(dateKey);
-    const wd = buildWeatherData(h, dateKey, sunset);
+    const wd = buildWeatherData(h, dateKey, anchorInstant);
     weatherCache.set(dateKey, wd);
     return wd;
   }
   if (!forecastHourly) {
     forecastHourly = await fetchForecastBlock();
   }
-  const wd = buildWeatherData(forecastHourly, dateKey, sunset);
+  const wd = buildWeatherData(forecastHourly, dateKey, anchorInstant);
   weatherCache.set(dateKey, wd);
   return wd;
 }

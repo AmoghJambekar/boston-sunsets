@@ -5,7 +5,8 @@ import { computeSkyPhase } from '../lib/skyPhase';
 export function useSkyState(
   selectedDateKey: string,
   sunrise: Date | null,
-  sunset: Date | null
+  sunset: Date | null,
+  viewAnchor: Date | null
 ) {
   const [now, setNow] = useState(() => new Date());
 
@@ -14,17 +15,11 @@ export function useSkyState(
     return () => window.clearInterval(id);
   }, []);
 
-  /** Sky paint (gradient, canvas, chrome): always as at sunset for that day — matches Open-Meteo row at sunset. */
+  /** Sky paint matches Open-Meteo row: instant within evening golden window */
   const phase: SkyPhase = useMemo(() => {
-    if (!sunrise || !sunset) return 'midday';
-    return computeSkyPhase(sunset, selectedDateKey, sunrise, sunset);
-  }, [selectedDateKey, sunrise, sunset]);
+    if (!sunrise || !sunset || !viewAnchor) return 'midday';
+    return computeSkyPhase(viewAnchor, selectedDateKey, sunrise, sunset);
+  }, [selectedDateKey, sunrise, sunset, viewAnchor]);
 
-  /** Labels / HUD countdown: wall clock vs that date's sunset */
-  const minutesToSunset = useMemo(() => {
-    if (!sunset) return 0;
-    return (sunset.getTime() - now.getTime()) / 60000;
-  }, [now, sunset]);
-
-  return { now, phase, minutesToSunset };
+  return { now, phase };
 }

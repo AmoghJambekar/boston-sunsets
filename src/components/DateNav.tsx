@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { enumerateDateRange } from '../lib/dates';
 import { computeScore } from '../lib/scoreEngine';
 import { ensureWeatherForDate } from '../hooks/useWeatherData';
-import { fetchSunTimes } from '../lib/sunApi';
+import { getBostonSunPack } from '../lib/bostonSolar';
 
 type Props = {
   todayKey: string;
@@ -42,8 +42,8 @@ export function DateNav({ todayKey, selectedKey, onSelect }: Props) {
       const results = await Promise.all(
         dates.map(async (dk) => {
           try {
-            const { sunset } = await fetchSunTimes(dk);
-            const wd = await ensureWeatherForDate(dk, sunset);
+            const { viewAnchor } = getBostonSunPack(dk);
+            const wd = await ensureWeatherForDate(dk, viewAnchor);
             return { dk, score: computeScore(wd.row) };
           } catch {
             return { dk, score: undefined as number | undefined };

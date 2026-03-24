@@ -36,7 +36,7 @@ export function ConditionsPanel({
       >
         <div className="conditions-panel__inner">
           <div className="conditions-panel__header">
-            <h2>Conditions at Sunset</h2>
+            <h2>Conditions at Golden Hour</h2>
             <button type="button" className="conditions-panel__close" onClick={onClose}>
               ×
             </button>

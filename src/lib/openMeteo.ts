@@ -114,10 +114,10 @@ function sliceHourlyForDate(h: OmHourly, dateKey: string): OmHourly {
 export function buildWeatherData(
   hourly: OmHourly,
   dateKey: string,
-  sunset: Date
+  anchorInstant: Date
 ): WeatherData {
   const dayHourly = sliceHourlyForDate(hourly, dateKey);
-  const idx = closestHourIndex(dayHourly.time, sunset);
+  const idx = closestHourIndex(dayHourly.time, anchorInstant);
   return {
     dateKey,
     row: rowAt(dayHourly, idx),

@@ -16,8 +16,8 @@ function hourET(d: Date): number {
 
 /**
  * Phase from a reference instant + that day's sunrise/sunset.
- * For this app, pass `sunset` as the first argument so the painted sky matches
- * conditions at sunset (not the viewer's wall clock).
+ * For this app, pass the view anchor (mid golden window) so the painted sky matches
+ * the Open-Meteo row (not the viewer's wall clock).
  */
 export function computeSkyPhase(
   referenceInstant: Date,
