@@ -67,7 +67,7 @@ export default function App() {
         animKey={animKey}
       />
       <p className="footnote">
-        Trying to predict the sunset based on some conditions, <br />
+        Trying to predict the sunset based on some <br />conditions,
         but it's up to the sky at the end of the day :)
       </p>
       <DateNav
