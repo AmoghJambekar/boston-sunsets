@@ -14,15 +14,19 @@ function hourET(d: Date): number {
   return h ? parseInt(h, 10) : 12;
 }
 
-/** Phase from wall clock + selected day's sunrise/sunset (UTC instants) */
+/**
+ * Phase from a reference instant + that day's sunrise/sunset.
+ * For this app, pass `sunset` as the first argument so the painted sky matches
+ * conditions at sunset (not the viewer's wall clock).
+ */
 export function computeSkyPhase(
-  now: Date,
+  referenceInstant: Date,
   selectedDateKey: string,
   sunrise: Date,
   sunset: Date
 ): SkyPhase {
-  const nowKey = dateKeyET(now);
-  const t = now.getTime();
+  const nowKey = dateKeyET(referenceInstant);
+  const t = referenceInstant.getTime();
   const sr = sunrise.getTime();
   const ss = sunset.getTime();
 
@@ -30,7 +34,7 @@ export function computeSkyPhase(
     return 'night';
   }
   if (nowKey < selectedDateKey) {
-    const h = hourET(now);
+    const h = hourET(referenceInstant);
     if (h < 5) return 'deep_night';
     if (h < 12) return 'morning';
     if (h < 17) return 'midday';
